@@ -1,5 +1,6 @@
 (ns kixi.spec
-  (:require [spec-tools.core :as st]))
+  (:require [spec-tools.core :as st]
+            [spec-tools.swagger.core :as swagger]))
 
 ;; This macro allows us to give type hints to swagger
 ;; when using complex specs
@@ -8,6 +9,35 @@
   `(st/create-spec {:spec ~symb
                     :form '~symb
                     :json-schema/type ~typename}))
+
+(defmacro api-spec-uuid
+  [symb typename]
+  `(st/create-spec {:spec ~symb
+                    :form '~symb
+                    :json-schema/type ~typename
+                    :json-schema/format "uuid"}))
+
+
+(defmacro api-spec-array
+  [symb typename]
+  `(st/create-spec {:spec ~symb
+                    :form '~symb
+                    :json-schema/type "array"
+                    :json-schema/items {:type ~typename}}))
+
+(defn transform-keys [m]
+  (reduce-kv (fn [x y z] (assoc x (keyword "json-schema" (name y)) z)) {} m))
+
+(defmacro api-spec-explicit
+  ([symb spec]
+   `(st/create-spec (merge {:spec ~symb
+                            :form '~symb}
+                           (transform-keys (swagger/transform ~spec)))))
+  ([symb spec title]
+   `(st/create-spec (merge {:spec ~symb
+                            :form '~symb
+                            :json-schema/title ~title}
+                           (transform-keys (swagger/transform ~spec))))))
 
 ;; From https://github.com/gfredericks/schpec
 (defn alias
