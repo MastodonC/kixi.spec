@@ -1,6 +1,7 @@
 (ns kixi.datastore.metadatastore.geography
   (:require  [clojure.spec.alpha :as s]
              [spec-tools.spec :as spec]
+             [kixi.spec :refer [api-spec-explicit]]
              [kixi.spec.conformers :as sc]))
 
 (s/def ::level spec/string?)
@@ -14,4 +15,7 @@
                 ::level]))
 
 (s/def ::geography
-  (s/multi-spec geography ::type))
+  (api-spec-explicit (s/multi-spec geography ::type)
+                     (s/keys :opt [::type
+                                   ::level])
+                     ::geography))

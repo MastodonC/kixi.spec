@@ -7,8 +7,9 @@
              [time :as t]]
             [clojure.spec.gen.alpha :as gen]
             [kixi.spec.conformers :as sc]
-            [kixi.spec :refer [api-spec]]
-            [kixi.group]))
+            [kixi.spec :refer [api-spec api-spec-array api-spec-explicit]]
+            [kixi.user :as user]
+            [kixi.group :as group]))
 
 (defn valid-file-name?
   "A file name should be at least one valid character long and only have valid characters and start with a digit or letter."
@@ -16,24 +17,31 @@
   (when (string? s)
     (re-matches #"^[\p{Digit}\p{IsAlphabetic}].{0,512}$" s)))
 
+
 (s/def ::type #{"stored" "bundle"})
-(s/def ::file-type sc/not-empty-string)
-(s/def ::id sc/uuid?)
-(s/def ::name (s/with-gen (s/and sc/not-empty-string valid-file-name?)
-                #(gen/such-that (fn [x] (and (< 0 (count x) 512)
-                                             (re-matches #"^[\p{Digit}\p{IsAlphabetic}]" ((comp str first) x)))) (gen/string) 100)))
-(s/def ::description sc/not-empty-string)
+(s/def ::file-type (api-spec sc/not-empty-string "string"))
+(s/def ::id (api-spec sc/uuid? "string"))
+(s/def ::name (api-spec (s/with-gen (s/and sc/not-empty-string valid-file-name?)
+                          #(gen/such-that (fn [x] (and (< 0 (count x) 512)
+                                                       (re-matches #"^[\p{Digit}\p{IsAlphabetic}]" ((comp str first) x)))) (gen/string) 100))
+                        "string"))
+(s/def ::description (api-spec sc/not-empty-string "string"))
 (s/def ::size-bytes (api-spec sc/varint? "integer"))
 (s/def ::source #{"upload" "segmentation"})
-(s/def ::header sc/bool?)
-(s/def ::created sc/timestamp?)
+(s/def ::header (api-spec sc/bool? "boolean"))
+(s/def ::created (api-spec sc/timestamp? "string"))
 
-(s/def ::source-created sc/date)
-(s/def ::source-updated sc/date)
+(s/def ::source-created (api-spec sc/date "string"))
+(s/def ::source-updated (api-spec sc/date "string"))
 
-(s/def ::maintainer sc/not-empty-string)
-(s/def ::author sc/not-empty-string)
-(s/def ::source sc/not-empty-string)
+(s/def ::maintainer (api-spec sc/not-empty-string "string"))
+(s/def ::author (api-spec sc/not-empty-string "string"))
+(s/def ::source (api-spec sc/not-empty-string "string"))
+
+(s/def ::file-read (api-spec sc/uuid? "string"))
+(s/def ::meta-read (api-spec sc/uuid? "string"))
+(s/def ::meta-visible (api-spec sc/uuid? "string"))
+(s/def ::meta-update (api-spec sc/uuid? "string"))
 
 (def activities
   [::file-read ::meta-visible ::meta-read ::meta-update])
@@ -45,23 +53,28 @@
   (set activities))
 
 (s/def ::sharing
-  (s/map-of (set activities)
-            (s/coll-of :kixi.group/id)))
+  (api-spec-explicit
+   (s/map-of (set activities)
+             (s/coll-of ::group/id))
+   (s/keys :opt [::file-read ::meta-read ::meta-update]) ;; TODO ::meta-visible ??
+   ::sharing))
 
 (defmulti provenance-type ::source)
 
 (defmethod provenance-type "upload"
   [_]
-  (s/keys :req [::source :kixi.user/id ::created]))
+  (s/keys :req [::source ::user/id ::created]))
 
 (defmethod provenance-type "segmentation"
   [_]
-  (s/keys :req [::source ::parent-id :kixi.user/id ::created]))
+  (s/keys :req [::source ::parent-id ::user/id ::created]))
 
-(s/def ::provenance (s/multi-spec provenance-type ::source))
+(s/def ::provenance (api-spec-explicit (s/multi-spec provenance-type ::source)
+                                       (s/keys :req [::source ::user/id ::created])
+                                       ::provenance))
 
 (s/def ::tags
-  (s/coll-of sc/not-empty-string :distinct true :into #{}))
+  (api-spec-array (s/coll-of sc/not-empty-string :distinct true :into #{}) "string"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
