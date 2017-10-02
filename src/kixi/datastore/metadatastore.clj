@@ -8,7 +8,8 @@
             [clojure.spec.gen.alpha :as gen]
             [kixi.spec.conformers :as sc]
             [kixi.spec :refer [api-spec api-spec-array api-spec-explicit api-spec-uuid]]
-            [kixi.group]))
+            [kixi.user :as user]
+            [kixi.group :as group]))
 
 (defn valid-file-name?
   "A file name should be at least one valid character long and only have valid characters and start with a digit or letter."
@@ -48,20 +49,20 @@
 
 (s/def ::sharing
   (s/map-of (set activities)
-            (s/coll-of :kixi.group/id)))
+            (s/coll-of ::group/id)))
 
 (defmulti provenance-type ::source)
 
 (defmethod provenance-type "upload"
   [_]
-  (s/keys :req [::source :kixi.user/id ::created]))
+  (s/keys :req [::source ::user/id ::created]))
 
 (defmethod provenance-type "segmentation"
   [_]
-  (s/keys :req [::source ::parent-id :kixi.user/id ::created]))
+  (s/keys :req [::source ::parent-id ::user/id ::created]))
 
 (s/def ::provenance (api-spec-explicit (s/multi-spec provenance-type ::source)
-                                       (s/keys :req [::source :kixi.user/id ::created])
+                                       (s/keys :req [::source ::user/id ::created])
                                        ::provenance))
 
 (s/def ::tags
