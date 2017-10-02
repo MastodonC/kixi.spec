@@ -10,14 +10,6 @@
                     :form '~symb
                     :json-schema/type ~typename}))
 
-(defmacro api-spec-uuid
-  [symb typename]
-  `(st/create-spec {:spec ~symb
-                    :form '~symb
-                    :json-schema/type ~typename
-                    :json-schema/format "uuid"}))
-
-
 (defmacro api-spec-array
   [symb typename]
   `(st/create-spec {:spec ~symb

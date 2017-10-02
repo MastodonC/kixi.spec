@@ -7,7 +7,7 @@
              [time :as t]]
             [clojure.spec.gen.alpha :as gen]
             [kixi.spec.conformers :as sc]
-            [kixi.spec :refer [api-spec api-spec-array api-spec-explicit api-spec-uuid]]
+            [kixi.spec :refer [api-spec api-spec-array api-spec-explicit]]
             [kixi.user :as user]
             [kixi.group :as group]))
 
@@ -20,7 +20,7 @@
 
 (s/def ::type #{"stored" "bundle"})
 (s/def ::file-type (api-spec sc/not-empty-string "string"))
-(s/def ::id (api-spec-uuid sc/uuid? "string"))
+(s/def ::id (api-spec sc/uuid? "string"))
 (s/def ::name (api-spec (s/with-gen (s/and sc/not-empty-string valid-file-name?)
                           #(gen/such-that (fn [x] (and (< 0 (count x) 512)
                                                        (re-matches #"^[\p{Digit}\p{IsAlphabetic}]" ((comp str first) x)))) (gen/string) 100))
@@ -38,6 +38,11 @@
 (s/def ::author (api-spec sc/not-empty-string "string"))
 (s/def ::source (api-spec sc/not-empty-string "string"))
 
+(s/def ::file-read (api-spec sc/uuid? "string"))
+(s/def ::meta-read (api-spec sc/uuid? "string"))
+(s/def ::meta-visible (api-spec sc/uuid? "string"))
+(s/def ::meta-update (api-spec sc/uuid? "string"))
+
 (def activities
   [::file-read ::meta-visible ::meta-read ::meta-update])
 
@@ -48,8 +53,11 @@
   (set activities))
 
 (s/def ::sharing
-  (s/map-of (set activities)
-            (s/coll-of ::group/id)))
+  (api-spec-explicit
+   (s/map-of (set activities)
+             (s/coll-of ::group/id))
+   (s/keys :opt [::file-read ::meta-read ::meta-update]) ;; TODO ::meta-visible ??
+   ::sharing))
 
 (defmulti provenance-type ::source)
 
