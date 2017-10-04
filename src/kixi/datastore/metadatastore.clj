@@ -1,6 +1,7 @@
 (ns kixi.datastore.metadatastore
   (:require [clojure.spec.alpha :as s]
             [spec-tools.spec :as spec]
+            [spec-tools.core :as st]
             [kixi.datastore.metadatastore
              [geography :as geo]
              [license :as l]
@@ -49,8 +50,15 @@
 (s/def ::activities
   (s/coll-of (set activities)))
 
+(defn activity?
+  [x]
+  ((set activities) (s/conform sc/ns-keyword? x)))
+
 (s/def ::activity
-  (set activities))
+  (st/spec {:spec activity?
+            :form `::activity
+            :json-schema/type "string"
+            :json-schema/enum activities}))
 
 (s/def ::sharing
   (api-spec-explicit
