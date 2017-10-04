@@ -2,6 +2,9 @@
   (:require [spec-tools.core :as st]
             [spec-tools.swagger.core :as swagger]))
 
+(defn transform-keys [m]
+  (reduce-kv (fn [x y z] (assoc x (keyword "json-schema" (name y)) z)) {} m))
+
 ;; This macro allows us to give type hints to swagger
 ;; when using complex specs
 (defmacro api-spec
@@ -16,9 +19,6 @@
                     :form '~symb
                     :json-schema/type "array"
                     :json-schema/items {:type ~typename}}))
-
-(defn transform-keys [m]
-  (reduce-kv (fn [x y z] (assoc x (keyword "json-schema" (name y)) z)) {} m))
 
 (defmacro api-spec-explicit
   ([symb spec]

@@ -278,7 +278,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Namespaced Keyword
 
-(defn ns-keyword?
+(defn -ns-keyword?
   [x]
   (cond
     (and (keyword? x)
@@ -292,9 +292,9 @@
                     ::s/invalid))
     :else ::s/invalid))
 
-(def ns-keyword
+(def ns-keyword?
   (s/with-gen
-    (s/conformer ns-keyword? identity)
+    (s/conformer -ns-keyword? identity)
     #(gen/such-that namespace (gen/keyword-ns))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
