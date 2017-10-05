@@ -47,13 +47,22 @@
   [spec]
   (keyword (str (namespace spec) ".update") (name spec)))
 
+(defn -rm?
+  [x]
+  (if (or (= x :rm)
+          (= x "rm"))
+    :rm
+    ::s/invalid))
+
+(s/def ::rm (s/conformer -rm? identity))
+
 (defn update-spec
   [[spec actions]]
   (let [rmless-actions (disj actions :rm)]
     (eval
      `(s/def ~(update-spec-name spec)
         ~(if (:rm actions)
-           (s/or :r #{:rm}
+           (s/or :r ::rm
                  :o (s/map-of rmless-actions
                               spec))
            (s/map-of rmless-actions
