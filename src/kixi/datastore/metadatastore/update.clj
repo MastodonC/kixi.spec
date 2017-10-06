@@ -54,7 +54,10 @@
     :rm
     ::s/invalid))
 
-(s/def ::rm (s/conformer -rm? identity))
+(s/def ::rm
+  (s/with-gen
+    (s/conformer -rm? identity)
+    (constantly (s/gen #{:rm "rm"}))))
 
 (defn update-spec
   [[spec actions]]
