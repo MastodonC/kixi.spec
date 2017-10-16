@@ -289,16 +289,16 @@
   (-regex? #"^http[s]?:\/\/([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+[^#?\s]+)(.*)?(#[\w\-]+)?$"))
 
 (def url?
-  (s/with-gen
-    (s/conformer url? identity)
-    (fn []
-      (gen/fmap fmt-url
-                (gen/tuple
-                 (gen/boolean)
-                 (gen/vector (gen/such-that #(< 1 (count %))  (gen/string-alphanumeric)) 2 5)
-                 (gen/vector (gen/such-that #(< 1 (count %))  (gen/string-alphanumeric)) 2 5)
-                 (gen/one-of [(gen/such-that #(< 1 (count %)) (gen/string-alphanumeric))
-                              (gen/return nil)]))))))
+  (let [at-least-one #(< 1 (count %))]
+    (s/with-gen
+      (s/conformer -url? identity)
+      #(gen/fmap fmt-url
+                 (gen/tuple
+                  (gen/boolean)
+                  (gen/vector (gen/such-that at-least-one  (gen/string-alphanumeric)) 2 5)
+                  (gen/vector (gen/such-that at-least-one  (gen/string-alphanumeric)) 2 5)
+                  (gen/one-of [(gen/such-that at-least-one (gen/string-alphanumeric))
+                               (gen/return nil)]))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Namespaced Keyword
