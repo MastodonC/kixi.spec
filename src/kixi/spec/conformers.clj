@@ -289,15 +289,15 @@
   (-regex? #"^http[s]?:\/\/([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+[^#?\s]+)(.*)?(#[\w\-]+)?$"))
 
 (def url?
-  (let [at-least-one #(< 1 (count %))]
+  (let [not-blank #(not (clojure.string/blank? %))]
     (s/with-gen
       (s/conformer -url? identity)
       #(gen/fmap fmt-url
                  (gen/tuple
                   (gen/boolean)
-                  (gen/vector (gen/such-that at-least-one  (gen/string-alphanumeric)) 2 5)
-                  (gen/vector (gen/such-that at-least-one  (gen/string-alphanumeric)) 2 5)
-                  (gen/one-of [(gen/such-that at-least-one (gen/string-alphanumeric))
+                  (gen/vector (gen/such-that not-blank  (gen/string-alphanumeric)) 2 5)
+                  (gen/vector (gen/such-that not-blank  (gen/string-alphanumeric)) 2 5)
+                  (gen/one-of [(gen/such-that not-blank (gen/string-alphanumeric))
                                (gen/return nil)]))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
