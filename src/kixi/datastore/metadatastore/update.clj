@@ -11,6 +11,7 @@
 (def metadata-types->field-actions
   {["stored" nil] {::ms/name #{:set}
                    ::ms/description #{:set :rm}
+                   ::ms/logo #{:set :rm}
                    ::ms/source #{:set :rm}
                    ::ms/author #{:set :rm}
                    ::ms/maintainer #{:set :rm}
@@ -26,6 +27,7 @@
 
    ["bundle" "datapack"] {::ms/name #{:set}
                           ::ms/description #{:set :rm}
+                          ::ms/logo #{:set :rm}
                           ::ms/source #{:set :rm}
                           ::ms/author #{:set :rm}
                           ::ms/maintainer #{:set :rm}
