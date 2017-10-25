@@ -27,7 +27,7 @@
                                                        (re-matches #"^[\p{Digit}\p{IsAlphabetic}]" ((comp str first) x)))) (gen/string) 100))
                         "string"))
 (s/def ::description (api-spec sc/not-empty-string "string"))
-(s/def ::logo sc/url?)
+(s/def ::logo (api-spec sc/url? "string"))
 (s/def ::size-bytes (api-spec sc/varint? "integer"))
 (s/def ::source #{"upload" "segmentation"})
 (s/def ::header (api-spec sc/bool? "boolean"))
