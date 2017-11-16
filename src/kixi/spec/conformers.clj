@@ -136,7 +136,7 @@
 (defn -regex?
   [rs]
   (fn [x]
-    (if (and (string? x) (re-find rs x))
+    (if (and (string? x) (re-matches rs x))
       x
       ::s/invalid)))
 
@@ -293,9 +293,12 @@
   [[prefix host tld]]
   (str (str/lower-case prefix) "@" (str/lower-case host) "." (str/lower-case tld)))
 
+(def email-re-str
+  "[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,63}")
+
 ;; regex from here http://www.lispcast.com/clojure.spec-vs-schema
 (def -email?
-  (-regex? #"^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,63}"))
+  (-regex? (re-pattern (str "^" email-re-str "$"))))
 
 (def email?
   (let [not-blank #(not (clojure.string/blank? %))]
