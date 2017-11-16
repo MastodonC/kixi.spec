@@ -308,7 +308,9 @@
                  (gen/tuple
                   (gen/such-that not-blank  (gen/string-alphanumeric))
                   (gen/such-that not-blank  (gen/string-alphanumeric))
-                  (gen/such-that not-blank  (gen/string-alphanumeric)))))))
+                  (gen/one-of [(gen/return "com")
+                               (gen/return "co.uk")
+                               (gen/return "net")]))))))
 
 (defn fmt-url
   [[secure? domains paths extension]]
