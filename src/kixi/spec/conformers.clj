@@ -3,6 +3,7 @@
             [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
             [clojure.test.check.generators :as tgen]
+            [clojure.string :as str]
             [clj-time.core :as t]
             [clj-time.format :as tf]))
 
@@ -268,12 +269,23 @@
 (def password?
   (s/conformer -password? identity))
 
+(defn fmt-email
+  [[prefix host tld]]
+  (str (str/lower-case prefix) "@" (str/lower-case host) "." (str/lower-case tld)))
+
 ;; regex from here http://www.lispcast.com/clojure.spec-vs-schema
 (def -email?
   (-regex? #"^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,63}"))
 
 (def email?
-  (s/conformer -email? identity))
+  (let [not-blank #(not (clojure.string/blank? %))]
+    (s/with-gen
+      (s/conformer -email? identity)
+      #(gen/fmap fmt-email
+                 (gen/tuple
+                  (gen/such-that not-blank  (gen/string-alphanumeric))
+                  (gen/such-that not-blank  (gen/string-alphanumeric))
+                  (gen/such-that not-blank  (gen/string-alphanumeric)))))))
 
 (defn fmt-url
   [[secure? domains paths extension]]
