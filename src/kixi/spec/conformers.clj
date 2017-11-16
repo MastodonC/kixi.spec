@@ -1,6 +1,5 @@
 (ns kixi.spec.conformers
-  (:require [kixi.spec.random :as rand]
-            [clojure.core :exclude [integer? double? set?]]
+  (:require [clojure.core :exclude [integer? double? set?]]
             [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
             [clojure.test.check.generators :as tgen]
