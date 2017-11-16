@@ -228,6 +228,26 @@
     (s/conformer -timestamp? time-unparser)
     #(gen/return (t/now))))
 
+(defn -var-timestamp?
+  [format]
+  (fn [x]
+    (if (instance? org.joda.time.DateTime x)
+      x
+      (try
+        (if (string? x)
+          (tf/parse (tf/formatters format) x)
+          ::s/invalid)
+        (catch IllegalArgumentException e
+          ::s/invalid)))))
+
+(defn var-timestamp?
+  [fmt]
+  (let [format (or fmt :basic-date-time)]
+    (s/with-gen
+      (s/conformer (-var-timestamp? format)
+                   (partial tf/unparse (tf/formatters format)))
+      #(gen/return (t/now)))))
+
 (defn midnight-timestamp?
   [x]
   (and (instance? org.joda.time.DateTime x)
