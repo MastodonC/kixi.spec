@@ -294,7 +294,7 @@
   (str (str/lower-case prefix) "@" (str/lower-case host) "." (str/lower-case tld)))
 
 (def email-re-str
-  "[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,63}")
+  "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,63}")
 
 ;; regex from here http://www.lispcast.com/clojure.spec-vs-schema
 (def -email?
