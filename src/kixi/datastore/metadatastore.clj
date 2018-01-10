@@ -47,7 +47,7 @@
 
 (def activities
   [::file-read ::meta-visible ::meta-read ::meta-update
-   ::datapack-add])
+   ::bundle-add])
 
 (s/def ::activities
   (s/coll-of (set activities)))
