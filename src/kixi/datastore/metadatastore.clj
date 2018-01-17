@@ -46,7 +46,8 @@
 (s/def ::meta-update (api-spec sc/uuid? "string"))
 
 (def activities
-  [::file-read ::meta-visible ::meta-read ::meta-update])
+  [::file-read ::meta-visible ::meta-read ::meta-update
+   ::bundle-add])
 
 (s/def ::activities
   (s/coll-of (set activities)))
