@@ -179,8 +179,9 @@
 
 (defn -not-empty-string?
   [x]
-  (and (string? x)
-       (not-empty x)))
+  (if (and (string? x)
+           (not-empty x)) x
+      ::s/invalid))
 
 (def not-empty-string
   (s/with-gen
