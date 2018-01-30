@@ -20,8 +20,10 @@
 
 
 (s/def ::type #{"stored" "bundle"})
+(s/def ::bundle-type #{"datapack"})
 (s/def ::file-type (api-spec sc/not-empty-string "string"))
 (s/def ::id (api-spec sc/uuid? "string"))
+(s/def ::parent-id (api-spec sc/uuid? "string"))
 (s/def ::name (api-spec (s/with-gen (s/and sc/not-empty-string valid-file-name?)
                           #(gen/such-that (fn [x] (and (< 0 (count x) 512)
                                                        (re-matches #"^[\p{Digit}\p{IsAlphabetic}]" ((comp str first) x)))) (gen/string) 100))
@@ -44,6 +46,7 @@
 (s/def ::meta-read (api-spec sc/uuid? "string"))
 (s/def ::meta-visible (api-spec sc/uuid? "string"))
 (s/def ::meta-update (api-spec sc/uuid? "string"))
+(s/def ::bundle-add (api-spec sc/uuid? "string"))
 
 (def activities
   [::file-read ::meta-visible ::meta-read ::meta-update
@@ -66,7 +69,7 @@
   (api-spec-explicit
    (s/map-of (set activities)
              (s/coll-of ::group/id))
-   (s/keys :opt [::file-read ::meta-read ::meta-update]) ;; TODO ::meta-visible ??
+   (s/keys :opt [::file-read ::meta-read ::meta-update ::bundle-add]) ;; TODO ::meta-visible ??
    ::sharing))
 
 (defmulti provenance-type ::source)
@@ -85,6 +88,14 @@
 
 (s/def ::tags
   (api-spec-array (s/coll-of sc/not-empty-string :distinct true :into #{}) "string"))
+(s/def ::bundled-ids
+  (api-spec-array (s/coll-of sc/uuid? :distinct true :into #{}) "string"))
+
+;; TODO improve these
+(s/def ::segmentations (s/coll-of (s/keys)))
+(s/def ::segment (s/keys))
+(s/def ::schema sc/uuid?)
+(s/def ::structural-validation (s/keys))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
