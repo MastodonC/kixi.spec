@@ -61,7 +61,9 @@
 
 (def varint?
   "big or small int"
-  (s/conformer -varint? identity))
+  (s/with-gen
+    (s/conformer -varint? identity)
+    (constantly (gen/int))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Double
