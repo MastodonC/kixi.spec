@@ -8,7 +8,7 @@
              [time :as t]]
             [clojure.spec.gen.alpha :as gen]
             [kixi.spec.conformers :as sc]
-            [kixi.spec :refer [api-spec api-spec-array api-spec-explicit]]
+            [kixi.spec :refer [api-spec api-spec-array api-spec-set api-spec-explicit]]
             [kixi.user :as user]
             [kixi.group :as group]))
 
