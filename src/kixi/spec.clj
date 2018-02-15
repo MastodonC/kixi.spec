@@ -20,6 +20,14 @@
                     :json-schema/type "array"
                     :json-schema/items {:type ~typename}}))
 
+(defmacro api-spec-set
+  [symb typename]
+  `(st/create-spec {:spec ~symb
+                    :form '~symb
+                    :json-schema/type "array"
+                    :json-schema/items {:type ~typename
+                                        :uniqueItems true}}))
+
 (defmacro api-spec-explicit
   ([symb spec]
    `(st/create-spec (merge {:spec ~symb
