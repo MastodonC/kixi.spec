@@ -87,9 +87,10 @@
                                        ::provenance))
 
 (s/def ::tags
-  (api-spec-array (s/coll-of sc/not-empty-string :distinct true :into #{}) "string"))
+  (api-spec-set (s/coll-of sc/not-empty-string :kind set?) "string"))
+
 (s/def ::bundled-ids
-  (api-spec-array (s/coll-of sc/uuid? :distinct true :into #{}) "string"))
+  (api-spec-set (s/coll-of sc/uuid? :kind set?) "string"))
 
 ;; TODO improve these
 (s/def ::segmentations (s/coll-of (s/keys)))
