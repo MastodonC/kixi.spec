@@ -7,8 +7,6 @@
             [kixi.mailer.destination :as d]
             [kixi.mailer.message :as m]))
 
-(alias 'reject 'kixi.mailer.reject)
-
 (s/def ::source (api-spec sc/email? "string"))
 
 (s/def ::destination
@@ -17,9 +15,3 @@
 
 (s/def ::message
   (s/keys :req [::m/subject ::m/body]))
-
-(s/def ::reject/reason
-  #{:invalid-cmd
-    :service-error})
-
-(s/def ::reject/message spec/string?)
