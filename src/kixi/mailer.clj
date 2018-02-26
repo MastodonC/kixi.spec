@@ -5,8 +5,7 @@
             [kixi.spec.conformers :as sc]
             ;;
             [kixi.mailer.destination :as d]
-            [kixi.mailer.message :as m]
-            [kixi.mailer.reject :as reject]))
+            [kixi.mailer.message :as m]))
 
 (s/def ::source (api-spec sc/email? "string"))
 
