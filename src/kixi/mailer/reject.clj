@@ -9,3 +9,6 @@
     :service-error})
 
 (s/def ::explain spec/string?)
+
+(s/def ::source spec/any?)
+(s/def ::destination spec/any?)
