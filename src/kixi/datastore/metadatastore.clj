@@ -53,14 +53,10 @@
    ::bundle-add])
 
 (s/def ::activities
-  (s/coll-of (set activities)))
-
-(defn activity?
-  [x]
-  ((set activities) (s/conform sc/ns-keyword? x)))
+  (set activities))
 
 (s/def ::activity
-  (st/spec {:spec activity?
+  (st/spec {:spec ::activities
             :form `::activity
             :json-schema/type "string"
             :json-schema/enum activities}))

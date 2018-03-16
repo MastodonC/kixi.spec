@@ -229,7 +229,7 @@
 (def timestamp?
   (s/with-gen
     (s/conformer -timestamp? time-unparser)
-    #(gen/return (t/now))))
+    #(gen/return (time-unparser (t/now)))))
 
 (defn -var-timestamp?
   [format]
@@ -273,7 +273,7 @@
 (def date
   (s/with-gen
     (s/conformer date? date-unparser)
-    #(gen/return (t/today-at-midnight))))
+    #(gen/return (date-unparser (t/today-at-midnight)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Uuid / Passwords / Emails
