@@ -60,7 +60,7 @@
   ((set activities) (s/conform sc/ns-keyword? x)))
 
 (s/def ::activity
-  (st/spec {:spec activity?
+  (st/spec {:spec (s/with-gen activity? #(gen/elements activities))
             :form `::activity
             :json-schema/type "string"
             :json-schema/enum activities}))
