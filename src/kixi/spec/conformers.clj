@@ -39,6 +39,8 @@
        (str-double->int s)
        ::s/invalid))))
 
+(def not-blank #(not (clojure.string/blank? %)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Integer
 
@@ -50,7 +52,10 @@
              (double->int x))     (double->int x)
         :else ::s/invalid))
 
-(def integer? (s/conformer -integer? identity))
+(def integer?
+  (s/with-gen
+    (s/conformer -integer? identity)
+    (constantly (gen/int))))
 
 (defn -varint?
   [x]
@@ -76,7 +81,10 @@
     (string? x) (str->double x)
     :else ::s/invalid))
 
-(def double? (s/conformer -double? identity))
+(def double?
+  (s/with-gen
+    (s/conformer -double? identity)
+    (constantly (gen/double))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Integer Range
@@ -97,7 +105,9 @@
   (when (or (not (int? min))
             (not (int? max)))
     (throw (IllegalArgumentException. "Both min and max must be integers")))
-  (s/conformer (-integer-range? min max) identity))
+  (s/with-gen
+    (s/conformer (-integer-range? min max) identity)
+    #(gen/elements (range min max))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Double Range
@@ -118,7 +128,9 @@
   (when (or (not (clojure.core/double? min))
             (not (clojure.core/double? max)))
     (throw (IllegalArgumentException. "Both min and max must be doubles")))
-  (s/conformer (-double-range? min max) identity))
+  (s/with-gen
+    (s/conformer (-double-range? min max) identity)
+    #(gen/elements (range min max 0.1))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Set
@@ -130,7 +142,9 @@
 
 (defn set?
   [& sargs]
-  (s/conformer (-set? (set sargs)) identity))
+  (s/with-gen
+    (s/conformer (-set? (set sargs)) identity)
+    #(gen/elements sargs)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Regex
@@ -143,12 +157,14 @@
       ::s/invalid)))
 
 (defn regex?
-  [rs]
+  [rs gen]
   (let [msg (str rs " is not a valid regex.")]
     (if (or (= (type rs) java.util.regex.Pattern)
             (string? rs))
       (try
-        (s/conformer (-regex? (re-pattern rs)) identity)
+        (s/with-gen
+          (s/conformer (-regex? (re-pattern rs)) identity)
+          gen)
         (catch java.util.regex.PatternSyntaxException _
           (throw (IllegalArgumentException. msg))))
       (throw (IllegalArgumentException. msg)))))
@@ -249,7 +265,7 @@
     (s/with-gen
       (s/conformer (-var-timestamp? format)
                    (partial tf/unparse (tf/formatters format)))
-      #(gen/return (t/now)))))
+      #(gen/return (tf/unparse (tf/formatters format) (t/now))))))
 
 (defn midnight-timestamp?
   [x]
@@ -258,7 +274,7 @@
        (zero? (t/minute x))
        (zero? (t/milli x))))
 
-(defn date?
+(defn -date?
   [x]
   (if (or (instance? org.joda.time.DateMidnight x)
           (midnight-timestamp? x))
@@ -270,7 +286,7 @@
       (catch IllegalArgumentException e
         ::s/invalid))))
 
-(def date
+(def date?
   (s/with-gen
     (s/conformer date? date-unparser)
     #(gen/return (date-unparser (t/today-at-midnight)))))
@@ -286,11 +302,13 @@
     (s/conformer -uuid? identity)
     #(tgen/no-shrink (gen/fmap str (gen/uuid)))))
 
-(def -password?
-  (-regex? #"(?=.*\d.*)(?=.*[a-z].*)(?=.*[A-Z].*).{8,}"))
-
 (def password?
-  (s/conformer -password? identity))
+  "At least 8 characters, one upper, one lower and one digit."
+  (regex? #"(?=.*\d.*)(?=.*[a-z].*)(?=.*[A-Z].*).{8,}"
+          #(gen/fmap (comp (partial apply str) shuffle flatten)
+                     (gen/tuple (gen/vector (gen/elements (range 0 9)))
+                                (gen/vector (gen/fmap char (gen/elements (range 65 91))))
+                                (gen/vector (gen/fmap char (gen/elements (range 97 123))))))))
 
 (defn fmt-email
   [[prefix host tld]]
@@ -304,16 +322,15 @@
   (-regex? (re-pattern (str "^" email-re-str "$"))))
 
 (def email?
-  (let [not-blank #(not (clojure.string/blank? %))]
-    (s/with-gen
-      (s/conformer -email? identity)
-      #(gen/fmap fmt-email
-                 (gen/tuple
-                  (gen/such-that not-blank  (gen/string-alphanumeric))
-                  (gen/such-that not-blank  (gen/string-alphanumeric))
-                  (gen/one-of [(gen/return "com")
-                               (gen/return "co.uk")
-                               (gen/return "net")]))))))
+  (s/with-gen
+    (s/conformer -email? identity)
+    #(gen/fmap fmt-email
+               (gen/tuple
+                (gen/such-that not-blank  (gen/string-alphanumeric))
+                (gen/such-that not-blank  (gen/string-alphanumeric))
+                (gen/one-of [(gen/return "com")
+                             (gen/return "co.uk")
+                             (gen/return "net")])))))
 
 (defn fmt-url
   [[secure? domains paths extension]]
@@ -368,3 +385,11 @@
 (def anything
   (s/with-gen (constantly true)
     #(gen/any)))
+
+(def anything-small
+  (let [mix-gens [(gen/string-alphanumeric)
+                  (gen/int)
+                  (gen/boolean)]]
+    (s/with-gen (constantly true)
+      #(gen/one-of (conj mix-gens
+                         (gen/vector (gen/one-of mix-gens)))))))
