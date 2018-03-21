@@ -35,8 +35,8 @@
 (s/def ::header (api-spec sc/bool? "boolean"))
 (s/def ::created (api-spec sc/timestamp? "string"))
 
-(s/def ::source-created (api-spec sc/date "string"))
-(s/def ::source-updated (api-spec sc/date "string"))
+(s/def ::source-created (api-spec sc/date? "string"))
+(s/def ::source-updated (api-spec sc/date? "string"))
 
 (s/def ::maintainer (api-spec sc/not-empty-string "string"))
 (s/def ::author (api-spec sc/not-empty-string "string"))
