@@ -288,7 +288,7 @@
 
 (def date?
   (s/with-gen
-    (s/conformer date? date-unparser)
+    (s/conformer -date? date-unparser)
     #(gen/return (date-unparser (t/today-at-midnight)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

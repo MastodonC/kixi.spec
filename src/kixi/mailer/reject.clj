@@ -10,5 +10,5 @@
 
 (s/def ::explain spec/string?)
 
-(s/def ::source spec/any?)
-(s/def ::destination spec/any?)
+(s/def ::source sc/anything-small)
+(s/def ::destination sc/anything-small)
