@@ -1,4 +1,4 @@
-(defproject kixi/kixi.spec "0.1.26"
+(defproject kixi/kixi.spec "0.1.27-SNAPSHOT"
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
