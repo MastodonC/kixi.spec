@@ -8,12 +8,6 @@
             [kixi.datastore.metadatastore :as ms]
             [kixi.comms :as comms]))
 
-(s/def ::collection-requested-payload
-  (s/keys :req [::cc/id
-                ::cr/message
-                ::cr/sender
-                ::cr/group-collection-requests
-                ::ms/id]))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Commands
 
@@ -21,7 +15,8 @@
   [:kixi.collect/request-collection "1.0.0"]
   [_]
   (s/keys :req [::cr/message
-                ::cr/groups
+                ::cr/requested-groups
+                ::cr/receiving-groups
                 ::ms/id]))
 
 (defmethod comms/command-payload
@@ -36,7 +31,12 @@
 (defmethod comms/event-payload
   [:kixi.collect/collection-requested "1.0.0"]
   [_]
-  ::collection-requested-payload)
+  (s/keys :req [::cc/id
+                ::cr/message
+                ::cr/sender
+                ::cr/receiving-groups
+                ::cr/group-collection-requests
+                ::ms/id]))
 
 (defmethod comms/event-payload
   [:kixi.collect/collection-request-rejected "1.0.0"]

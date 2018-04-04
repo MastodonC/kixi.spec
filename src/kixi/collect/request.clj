@@ -3,11 +3,26 @@
             [kixi.spec.conformers :as sc]
             [kixi.user]))
 
+;; id of request
 (s/def ::id sc/uuid?)
-(s/def ::ids (s/coll-of ::id :distinct true))
+
+;; collection of ids
+(s/def ::ids (s/coll-of ::id :distinct true :into #{} :kind set))
+
+;; message for requested groups
 (s/def ::message sc/not-empty-string)
-(s/def ::groups  (s/coll-of :kixi.group/id))
+
+;; these groups are asked for files
+(s/def ::requested-groups (s/coll-of :kixi.group/id ))
+
+;; these groups are given permission to view the files
+(s/def ::receiving-groups (s/coll-of :kixi.group/id :distinct true :into #{} :kind set))
+
+;; details of original sender user
 (s/def ::sender :kixi/user)
+
+;; when event was created
 (s/def ::created-at sc/timestamp?)
-(s/def ::group-collection-requests
-  (s/map-of sc/uuid? sc/uuid?)) ;; group-id (k), collection-request-id (v)
+
+;; requested-group-id (k), collection-request-id (v)
+(s/def ::group-collection-requests (s/map-of sc/uuid? sc/uuid?))
