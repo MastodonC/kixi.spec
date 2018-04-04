@@ -7,7 +7,8 @@
                  [org.clojure/test.check "0.9.0"]
                  [com.rpl/specter "1.1.0"]
                  [clj-time "0.14.2"]
-                 [metosin/spec-tools "0.5.1"]]
+                 [metosin/spec-tools "0.5.1"]
+                 [kixi/kixi.comms "0.2.37" :scope "provided"]]
   :repositories [["releases" {:url "https://clojars.org/repo"
                               :creds :gpg}]
                  ["snapshots" {:url "https://clojars.org/repo"

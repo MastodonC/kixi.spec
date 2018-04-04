@@ -47,3 +47,10 @@
        (catch Exception _
          (create-ns namespace-sym)
          (clojure.core/alias alias namespace-sym))))
+
+;; Functions that we use commonly for dispatching messages.
+;; Enables:
+;;    (defmulti foo event-type-version-pair)
+;;    (defmethod foo [:kixi.event/foo "1.0.0"] [...] )
+(def event-dispatch (juxt :kixi.event/type :kixi.event/version))
+(def command-dispatch (juxt :kixi.command/type :kixi.command/version))
