@@ -8,6 +8,7 @@
   (is (spec-can-generate? ::sut/id))
   (is (spec-can-generate? ::sut/ids))
   (is (spec-can-generate? ::sut/message))
+  (is (spec-can-generate? ::sut/submit-route))
   (is (spec-can-generate? ::sut/requested-groups))
   (is (spec-can-generate? ::sut/receiving-groups))
   (is (spec-can-generate? ::sut/sender))

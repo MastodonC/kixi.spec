@@ -21,6 +21,9 @@
 ;; details of original sender user
 (s/def ::sender :kixi/user)
 
+;; the route that the requested groups should be sent
+(s/def ::submit-route sc/not-empty-string)
+
 ;; when event was created
 (s/def ::created-at sc/timestamp?)
 

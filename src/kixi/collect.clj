@@ -15,6 +15,7 @@
   [:kixi.collect/request-collection "1.0.0"]
   [_]
   (s/keys :req [::cr/message
+                ::cr/submit-route
                 ::cr/requested-groups
                 ::cr/receiving-groups
                 ::ms/id]))
@@ -33,6 +34,7 @@
   [_]
   (s/keys :req [::cc/id
                 ::cr/message
+                ::cr/submit-route
                 ::cr/sender
                 ::cr/receiving-groups
                 ::cr/group-collection-requests
@@ -49,10 +51,13 @@
   [:kixi.collect.process-manager.collection-request/process-completed "1.0.0"]
   [_]
   (s/keys :req [::cc/id
-                ::pmcr/results
                 ::cr/message
+                ::cr/submit-route
                 ::cr/sender
-                ::cr/group-collection-requests]))
+                ::cr/receiving-groups
+                ::cr/group-collection-requests
+                ::ms/id
+                ::pmcr/results]))
 
 (defmethod comms/event-payload
   [:kixi.collect.process-manager.collection-request/complete-process-rejected "1.0.0"]
