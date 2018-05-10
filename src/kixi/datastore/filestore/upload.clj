@@ -19,5 +19,5 @@
 ;; db
 (s/def ::id string?)
 (s/def ::mup? boolean?)
-(s/def ::started-at sc/timestamp)
+(s/def ::started-at sc/timestamp?)
 (s/def ::ttl int?)
